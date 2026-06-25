@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import Spinner from '@/components/Spinner';
 
 export default function LoginPage() {
   const [tendangnhap, setU] = useState('admin');
@@ -38,7 +39,7 @@ export default function LoginPage() {
             <input type="password" value={matkhau} onChange={(e) => setP(e.target.value)} placeholder="••••••" />
           </label>
         </div>
-        <button className="btn" disabled={loading}>{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
+        <button className="btn" disabled={loading}>{loading && <Spinner />}{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
         <div className="login-hint">
           <b>Tài khoản demo:</b><br />
           • admin / 123456 (toàn quyền)<br />

@@ -1,18 +1,19 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import api, { dinhDangTien } from '@/lib/api';
+import api, { dinhDangTien, kyHienTai } from '@/lib/api';
+import Spinner from '@/components/Spinner';
 import { SkeletonKpis, SkeletonCard, SkeletonTable } from '@/components/Skeleton';
 
 const COLORS = ['#6366f1', '#16a34a', '#d97706', '#7c3aed', '#dc2626'];
+const KY = kyHienTai();
 
 export default function Dashboard() {
-  const [thang, setThang] = useState(5);
-  const [nam, setNam] = useState(2026);
+  const [thang, setThang] = useState(KY.thang);
+  const [nam, setNam] = useState(KY.nam);
   const [tk, setTk] = useState({});
   const [pb, setPb] = useState([]);
   const [top, setTop] = useState([]);
-  const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
@@ -26,14 +27,7 @@ export default function Dashboard() {
 
   useEffect(() => { load().catch(() => {}).finally(() => setLoading(false)); }, []);
 
-  const tinhLuongCaCongTy = async () => {
-    setMsg('Đang tính lương toàn công ty...');
-    try {
-      const { data } = await api.post('/luong/tinh-thang', { thang, nam });
-      setMsg(`✅ ${data.message} — Thành công: ${data.thanhcong}, Lỗi: ${data.loi}`);
-      await load();
-    } catch (e) { setMsg('⚠ ' + (e.response?.data?.error || e.message)); }
-  };
+  const xem = async () => { setLoading(true); try { await load(); } catch {} finally { setLoading(false); } };
 
   const chartData = pb.map((p) => ({ ten: p.TENPB, luong: Number(p.TONG_LUONG_THUCLINH) }));
 
@@ -50,11 +44,10 @@ export default function Dashboard() {
         <label className="field">Năm
           <input type="number" value={nam} onChange={(e) => setNam(+e.target.value)} style={{ width: 100 }} />
         </label>
-        <button className="btn ghost" onClick={() => load().catch(() => {})} style={{ alignSelf: 'end' }}>Xem</button>
-        <button className="btn" onClick={tinhLuongCaCongTy} style={{ alignSelf: 'end' }}>⚙ Tính lương cả công ty</button>
+        <button className="btn ghost" onClick={xem} disabled={loading} style={{ alignSelf: 'end' }}>
+          {loading && <Spinner />}Xem
+        </button>
       </div>
-
-      {msg && <div className="alert ok">{msg}</div>}
 
       {loading ? (
         <><SkeletonKpis n={4} /><SkeletonCard height={300} /><SkeletonTable rows={5} cols={5} /></>

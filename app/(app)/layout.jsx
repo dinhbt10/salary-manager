@@ -5,10 +5,10 @@ import { usePathname, useRouter } from 'next/navigation';
 
 const LINKS = [
   { href: '/', label: '📊 Tổng quan' },
+  { href: '/phongban', label: '🏢 Phòng ban' },
   { href: '/nhanvien', label: '👥 Nhân viên' },
   { href: '/bangluong', label: '💰 Bảng lương' },
   { href: '/thuong', label: '🎁 Thưởng / Khấu trừ' },
-  { href: '/baocao', label: '📈 Báo cáo' },
 ];
 
 export default function AppLayout({ children }) {
